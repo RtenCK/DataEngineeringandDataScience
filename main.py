@@ -12,26 +12,31 @@ def getData(pageNumber):
     content = yelpRequest.content
     # print(content)
     soup = BeautifulSoup(content)
-    print(soup.get_text())
-    print("getting text")
+    # print(soup.get_text())
+    # print("getting text")
 
-    for block in soup.findAll('ul', attrs={'class':'undefined list__373c0__vNxqp'}):
-        names = block.findAll('span', attrs={'class':'fs-block css-m6anxm'})
-        reviews = block.findAll('p', attrs={'class':'comment__373c0__Nsutg'})
-        ratings = block.findAll('div', attrs={'class':'i-stars__373c0___sZu0'})
+    reviews = []
+    ratings = []
+    names = []
+
+    for unorederedList in soup.findAll('ul', attrs={'class':'undefined list__373c0__vNxqp'}):
+        for block in unorederedList.findAll('div', attrs={'class': 'review__373c0__3MsBX border-color--default__373c0__1WKlL'}):
+            reviews.append(block.find('p', attrs={'class':'comment__373c0__Nsutg'}))
+            ratings.append(block.find('div', attrs={'class':'i-stars__373c0___sZu0'}))
+            names.append(block.find('span', attrs={'class':'fs-block css-m6anxm'}))
 
     print("LENGHTS")
     print(len(names))
     print(len(ratings))
     print(len(reviews))
 
-    for i in range(0, 10):
-        realName = names[i].find('a')
-        if realName is not None:
-            print(realName.text)
+    # for i in range(0, 10):
+    #     realName = names[i].find('a')
+    #     if realName is not None:
+    #         print(realName.text)
 
-        print(reviews[i])
-        print(ratings[i].text)
+    #     print(reviews[i])
+    #     print(ratings[i].text)
 
 
     print ("//////////////////////////////////////")
