@@ -1,4 +1,5 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 
 numberOfPages = 2
@@ -21,7 +22,10 @@ def getData(pageNumber):
         for block in unorederedList.findAll('div', attrs={'class': 'review__373c0__3MsBX border-color--default__373c0__1WKlL'}):
             reviewBlock = []
             reviewBlock.append(block.find('p', attrs={'class':'comment__373c0__Nsutg'}).text)
-            reviewBlock.append(block.find('div', attrs={'class':'i-stars__373c0___sZu0'})['aria-label'])
+            rating = block.find('div', attrs={'class':'i-stars__373c0___sZu0'})['aria-label']
+            rating = re.split('\s', rating)
+            reviewBlock.append(rating[0])
+            # print(reviewBlock)
             reviewBlock.append(block.find('span', attrs={'class':'fs-block css-m6anxm'}).text)
             allReviews.append(reviewBlock)
 # for i in range(0, numberOfPages):
