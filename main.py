@@ -1,3 +1,4 @@
+import pandas as pd
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -28,5 +29,10 @@ def getData(pageNumber):
             # print(reviewBlock)
             reviewBlock.append(block.find('span', attrs={'class':'fs-block css-m6anxm'}).text)
             allReviews.append(reviewBlock)
+            print(allReviews[0])
+    
+    
+    flatten = lambda l: [item for sublist in l for item in sublist]
+    reviewDataFrame = pd.DataFrame(flatten(allReviews), columns=['Review', 'Rating', 'Author'])
 # for i in range(0, numberOfPages):
 getData(0)
