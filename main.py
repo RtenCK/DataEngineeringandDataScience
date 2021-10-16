@@ -29,8 +29,26 @@ def getData(pageNumber):
             reviewBlock.append(block.find('span', attrs={'class':'fs-block css-m6anxm'}).text)
             allReviews.append(reviewBlock)
     
-    
-for i in range(0, numberOfPages):
-    getData(i)
-reviewDataFrame = pd.DataFrame(data = allReviews, columns=['Review', 'Rating', 'Author'])
+
+def partition(x):
+    if x > 2.5:
+        return 'positive'
+    return 'negative'
+
+# THIS IS FOR SCRAPING
+# for i in range(0, numberOfPages):
+#     getData(i)
+# reviewDataFrame = pd.DataFrame(data = allReviews, columns=['Review', 'Rating', 'Author'])
+# reviewDataFrame.to_csv('yelp_reviews.csv')
+
+
+
+# READ CSV's
+reviewDataFrame = pd.read_csv('yelp_reviews.csv')
+print(reviewDataFrame.columns)
+
+labelColumn = reviewDataFrame['Rating'].map(partition)
+reviewDataFrame['labelColumn'] = labelColumn
 print(reviewDataFrame)
+
+# labelColumn = reviewDataFrame.map(reviewDataFrame['Review'])
