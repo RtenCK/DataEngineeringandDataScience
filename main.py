@@ -10,6 +10,8 @@ from nltk.stem import PorterStemmer                 # Stemmer
 
 from sklearn.feature_extraction.text import CountVectorizer          #For Bag of words
 from sklearn.feature_extraction.text import TfidfVectorizer          #For TF-IDF
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, roc_auc_score
 
 numberOfPages = 4
 allReviews = []
@@ -40,8 +42,8 @@ def getData(pageNumber):
 
 def partition(x):
     if x > 2.5:
-        return 'positive'
-    return 'negative'
+        return 'positive' 
+    return 'negative' 
 
 # THIS IS FOR SCRAPING
 # for i in range(0, numberOfPages):
@@ -55,8 +57,8 @@ print(reviewDataFrame.columns)
 
 labelColumn = reviewDataFrame['Rating'].map(partition)
 reviewDataFrame['labelColumn'] = labelColumn
-print(reviewDataFrame)
 
+# halfDataFrame = reviewDataFrame[0:(reviewDataFrame / 2)]
 final_X = reviewDataFrame['Review']
 final_y = reviewDataFrame['Rating']
 
@@ -75,7 +77,44 @@ for sentence in final_X:
     
     words = [snow.stem(word) for word in sentence.split() if word not in stopwords.words('english')]   # Stemming and removing stopwords
     temp.append(words)
-    
+
 final_X = temp 
 
+sentences = []
+for row in final_X:
+    single_row = ''
+    for word in row:
+       single_row = single_row + ' ' + word
+    sentences.append(single_row)
+
+final_X = sentences
+
+count_vect = CountVectorizer(max_features=5000)
+bow_data = count_vect.fit_transform(final_X)
+
+final_model = LogisticRegression()
+final_model.fit(bow_data, final_y)
+print(final_X)
+print ("Baseline Accuracy: %s" % accuracy_score(final_y, final_model.predict(bow_data)))
+
+print ("Baseline AUC: %s" %  roc_auc_score(final_y, final_model.predict_proba(bow_data)[::,1]))
+
+# # reverse dictionary
+# ft = count_vect.get_feature_names() 
+# df = pd.SparseDataFrame(bow_data, columns=ft)
+# df.head()
+
+# # try out bi grams
+# final_B_X = final_X
+# count_vect = CountVectorizer(ngram_range=(1,2))
+# Bigram_data = count_vect.fit_transform(final_B_X)
+# print(Bigram_data[1])
+
+# # try out TFIDF
+# final_tf = final_X
+# tf_idf = TfidfVectorizer(max_features=5000)
+# tf_data = tf_idf.fit_transform(final_tf)
+# print(tf_data[1])
+
 # labelColumn = reviewDataFrame.map(reviewDataFrame['Review'])
+
