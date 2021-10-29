@@ -11,6 +11,8 @@ from nltk.stem import PorterStemmer                 # Stemmer
 from sklearn.feature_extraction.text import CountVectorizer          #For Bag of words
 from sklearn.feature_extraction.text import TfidfVectorizer          #For TF-IDF
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
 
 numberOfPages = 4
@@ -92,12 +94,26 @@ final_X = sentences
 count_vect = CountVectorizer(max_features=5000)
 bow_data = count_vect.fit_transform(final_X)
 
-final_model = LogisticRegression()
-final_model.fit(bow_data, final_y)
-print(final_X)
-print ("Baseline Accuracy: %s" % accuracy_score(final_y, final_model.predict(bow_data)))
+print('regression')
+logistic_model = LogisticRegression()
+logistic_model.fit(bow_data, final_y)
+print ("Baseline Accuracy: %s" % accuracy_score(final_y, logistic_model.predict(bow_data)))
 
-print ("Baseline AUC: %s" %  roc_auc_score(final_y, final_model.predict_proba(bow_data)[::,1]))
+# print ("Baseline AUC: %s" %  roc_auc_score(final_y, logistic_model.predict_proba(bow_data)[::,1]))
+
+print('naive bayes')
+naiveBayes_model = MultinomialNB() 
+naiveBayes_model.fit(bow_data, final_y)
+print ("Baseline Accuracy: %s" % accuracy_score(final_y, naiveBayes_model.predict(bow_data)))
+
+# print ("Baseline AUC: %s" %  roc_auc_score(final_y, naiveBayes_model.predict_proba(bow_data)[::,1]))
+
+print('random forest')
+randomForest_model = RandomForestClassifier()
+randomForest_model.fit(bow_data, final_y)
+print ("Baseline Accuracy: %s" % accuracy_score(final_y, randomForest_model.predict(bow_data)))
+
+# print ("Baseline AUC: %s" %  roc_auc_score(final_y, naiveBayes_model.predict_proba(bow_data)[::,1]))
 
 # # reverse dictionary
 # ft = count_vect.get_feature_names() 
