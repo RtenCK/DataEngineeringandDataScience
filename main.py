@@ -15,8 +15,20 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
 
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+
 numberOfPages = 4
 allReviews = []
+
+Base = declarative_base()
+class Review(Base):
+    __tablename__ = "review"
+
+    id = Column('id', Integer, primary_key=True)
+    rating = Column('rating', Integer, unique=False)
+    review = Column('review', String, unique=False)
 
 def getData(pageNumber):
     headers = {"User-Agent":"DeepCrawl", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
@@ -55,7 +67,31 @@ def partition(x):
 
 # READ CSV's
 reviewDataFrame = pd.read_csv('yelp_reviews.csv')
-print(reviewDataFrame.columns)
+# engine = create_engine("mysql+mysqldb://root:root@localhost/user", echo=True, future=True)
+
+engine = create_engine('sqlite:///:memory:', echo=True)
+Base.metadata.create_all(bind=engine)
+Session = sessionmaker(bind=engine)
+
+session = Session()
+
+for i in range(len(reviewDataFrame)):
+    review = Review()
+    review.rating = int(reviewDataFrame['Rating'][i])
+    # print(review.rating)
+    review.review = reviewDataFrame['Review'][i]
+
+    session.add(review)
+
+session.commit()
+
+reviews = session.query(Review).all()
+
+# dataFrame = pd.DataFrame(reviews, columns=['Review', 'Rating'])
+# for review in reviews:
+    
+
+# print(reviewDataFrame.columns)
 
 labelColumn = reviewDataFrame['Rating'].map(partition)
 reviewDataFrame['labelColumn'] = labelColumn
